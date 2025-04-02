@@ -1,0 +1,17 @@
+steps:
+  # 1. Docker 이미지 빌드
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/myapp', '.']
+
+  # 2. 빌드된 이미지를 Artifact Registry에 푸시
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/myapp']
+
+  # 3. Cloud Run에 배포
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'myapp',
+           '--image', 'gcr.io/$PROJECT_ID/myapp',
+           '--platform', 'managed',
+           '--region', 'asia-northeast3',  # 🇰🇷 서울 리전
+           '--allow-unauthenticated']
